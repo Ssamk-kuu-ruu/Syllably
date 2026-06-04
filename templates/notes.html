@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Notes - Hangarin</title>
+    {% include 'includes/pwa_head.html' %}
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: #fff;
+        background: linear-gradient(135deg, #410000, #120000);
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        min-height: 100vh;
+      }
+      .sidebar {
+        background: rgba(20, 0, 0, 0.92);
+        border-right: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 20px;
+      }
+      .sidebar h3 {
+        margin-top: 0;
+        color: #ffd6d6;
+      }
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0 0;
+      }
+      .sidebar li {
+        margin: 11px 0;
+      }
+      .sidebar a {
+        color: #fff;
+        text-decoration: none;
+        display: block;
+        padding: 10px 12px;
+        border-radius: 8px;
+      }
+      .sidebar a:hover {
+        background: rgba(255, 29, 29, 0.25);
+      }
+      .content {
+        padding: 24px;
+      }
+      .card {
+        background: rgba(24, 0, 0, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: left;
+      }
+      th {
+        color: #ffd8d8;
+      }
+      .note-content {
+        white-space: pre-wrap;
+      }
+      .pagination {
+        margin-top: 14px;
+      }
+      .pagination a,
+      .pagination span {
+        margin-right: 8px;
+        color: #fff;
+      }
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <h3>Navigation</h3>
+        <ul>
+          <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+          <li><a href="{% url 'tasks' %}">Tasks</a></li>
+          <li><a href="{% url 'subtasks' %}">Sub-Tasks</a></li>
+          <li><a href="{% url 'notes' %}">Notes</a></li>
+          <li><a href="{% url 'priorities' %}">Priorities</a></li>
+          <li><a href="{% url 'categories' %}">Categories</a></li>
+        </ul>
+      </aside>
+      <main class="content">
+        <h1>Notes</h1>
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Content</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for note in notes %}
+              <tr>
+                <td>{{ note.task.title }}</td>
+                <td class="note-content">{{ note.content }}</td>
+                <td>{{ note.created_at|date:'Y-m-d H:i' }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="3">No notes yet.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% if is_paginated %}
+        <div class="pagination">
+          {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+          {% endif %}
+          <span
+            >Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages
+            }}</span
+          >
+          {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}">Next</a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </main>
+    </div>
+  </body>
+</html>

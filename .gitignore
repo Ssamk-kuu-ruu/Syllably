@@ -1,0 +1,14 @@
+# Environment
+venv/
+.env
+
+# Python junk
+__pycache__/
+*.pyc
+
+# Database (keep this local, don't push to GitHub)
+db.sqlite3
+
+# Editor settings
+.vscode/
+.idea/

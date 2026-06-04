@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create Task - Hangarin</title>
+    {% include 'includes/pwa_head.html' %}
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #410000, #120000);
+        color: #fff;
+      }
+      .page-wrap {
+        max-width: 1000px;
+        margin: 20px auto;
+        padding: 16px;
+      }
+      .card {
+        background: rgba(24, 0, 0, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 14px;
+        padding: 22px;
+      }
+      .card h2 {
+        margin-top: 0;
+      }
+      .form-group {
+        margin-bottom: 14px;
+      }
+      label {
+        display: block;
+        margin-bottom: 6px;
+        color: #ffd7d7;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        background: rgba(0, 0, 0, 0.55);
+        color: #fff;
+        box-sizing: border-box;
+      }
+      .actions {
+        margin-top: 16px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        padding: 10px 18px;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background: #ce2a2a;
+        color: white;
+      }
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.12);
+        color: white;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .btn-primary:hover,
+      .btn-secondary:hover {
+        opacity: 0.92;
+      }
+      @media (max-width: 640px) {
+        .page-wrap {
+          margin: 10px auto;
+          padding: 10px;
+        }
+        .card {
+          padding: 14px;
+        }
+        .actions {
+          flex-direction: column;
+        }
+        .btn {
+          width: 100%;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrap">
+      <div class="card">
+        <h2>Create a New Task</h2>
+        <form method="post">
+          {% csrf_token %} {% for field in form %}
+          <div class="form-group" style="position: relative">
+            {{ field.label_tag }} {{ field }} {% if field.help_text %}<small
+              style="color: #ccc"
+              >{{ field.help_text }}</small
+            >{% endif %} {% for error in field.errors %}
+            <div style="color: #ff8282">{{ error }}</div>
+            {% endfor %}
+          </div>
+          {% endfor %}
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">Save Task</button>
+            <a href="{% url 'tasks' %}" class="btn btn-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

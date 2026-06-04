@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Settings - Hangarin</title>
+    {% include 'includes/pwa_head.html' %}
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: #fff;
+        background: linear-gradient(135deg, #410000, #120000);
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        min-height: 100vh;
+      }
+      .sidebar {
+        background: rgba(20, 0, 0, 0.92);
+        border-right: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 20px;
+      }
+      .sidebar h3 {
+        margin-top: 0;
+        color: #ffd6d6;
+      }
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0 0;
+      }
+      .sidebar li {
+        margin: 11px 0;
+      }
+      .sidebar a {
+        color: #fff;
+        text-decoration: none;
+        display: block;
+        padding: 10px 12px;
+        border-radius: 8px;
+      }
+      .sidebar a:hover {
+        background: rgba(255, 29, 29, 0.25);
+      }
+      .content {
+        padding: 24px;
+      }
+      .card {
+        max-width: 760px;
+        background: rgba(24, 0, 0, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 14px;
+        padding: 20px;
+      }
+      .row {
+        display: grid;
+        gap: 12px;
+      }
+      .item {
+        padding: 14px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .btn {
+        display: inline-flex;
+        margin-top: 12px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        background: linear-gradient(90deg, #1d74ff, #6ea8ff);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+      }
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <h3>Navigation</h3>
+        <ul>
+          <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+          <li><a href="{% url 'tasks' %}">Tasks</a></li>
+          <li><a href="{% url 'subtasks' %}">Sub-Tasks</a></li>
+          <li><a href="{% url 'notes' %}">Notes</a></li>
+          <li><a href="{% url 'priorities' %}">Priorities</a></li>
+          <li><a href="{% url 'categories' %}">Categories</a></li>
+        </ul>
+      </aside>
+      <main class="content">
+        <h1>Settings</h1>
+        <div class="card">
+          <div class="row">
+            <div class="item">
+              <strong>Account</strong><br />Manage profile details and login
+              information.
+            </div>
+            <div class="item">
+              <strong>Appearance</strong><br />Red theme is enabled for the app.
+            </div>
+            <div class="item">
+              <strong>Notifications</strong><br />Task updates and reminders are
+              active.
+            </div>
+          </div>
+          <a class="btn" href="{% url 'profile_edit' %}">Edit Profile</a>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

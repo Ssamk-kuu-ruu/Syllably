@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login - Hangarin</title>
+    {% include 'includes/pwa_head.html' %}
+    <style>
+      :root {
+        --bg-start: #410000;
+        --bg-end: #120000;
+        --panel: rgba(25, 0, 0, 0.82);
+        --panel-border: rgba(255, 255, 255, 0.14);
+        --text-soft: #f6dada;
+        --accent: #f87171;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background:
+          radial-gradient(
+            circle at top,
+            rgba(248, 113, 113, 0.18),
+            transparent 36%
+          ),
+          linear-gradient(135deg, var(--bg-start), var(--bg-end));
+        color: #fdfdfd;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+      }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(
+            circle at 20% 20%,
+            rgba(255, 255, 255, 0.08),
+            transparent 22%
+          ),
+          radial-gradient(
+            circle at 80% 10%,
+            rgba(255, 255, 255, 0.06),
+            transparent 18%
+          ),
+          radial-gradient(
+            circle at 50% 85%,
+            rgba(248, 113, 113, 0.08),
+            transparent 28%
+          );
+        pointer-events: none;
+        animation: driftGlow 14s ease-in-out infinite alternate;
+      }
+      .page-wrap {
+        width: 100%;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 22px 14px 28px;
+        position: relative;
+        z-index: 1;
+      }
+      .card {
+        background: linear-gradient(
+          160deg,
+          rgba(41, 0, 0, 0.94),
+          rgba(18, 0, 2, 0.92)
+        );
+        border: 1px solid var(--panel-border);
+        border-radius: 26px;
+        padding: 30px 26px 28px;
+        box-shadow:
+          0 24px 60px rgba(0, 0, 0, 0.45),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        width: min(520px, 92vw);
+        backdrop-filter: blur(18px);
+        animation: cardReveal 520ms ease-out both;
+        position: relative;
+        overflow: hidden;
+      }
+      .card::after {
+        content: "";
+        position: absolute;
+        inset: -30% auto auto -35%;
+        width: 70%;
+        height: 70%;
+        background: radial-gradient(
+          circle,
+          rgba(248, 113, 113, 0.14),
+          transparent 70%
+        );
+        pointer-events: none;
+        animation: floatAura 8s ease-in-out infinite alternate;
+      }
+      .logo-wrap {
+        text-align: center;
+        margin-bottom: 14px;
+        padding-top: 6px;
+      }
+      h2 {
+        margin: 0 0 18px;
+        font-size: clamp(1.4rem, 2vw, 2.2rem);
+        color: #ffffff;
+        text-shadow: 0 0 16px rgba(255, 255, 255, 0.2);
+        text-align: center;
+        animation: fadeLift 600ms ease-out both;
+        animation-delay: 140ms;
+      }
+      form p {
+        margin: 0 0 14px;
+      }
+      label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--text-soft);
+        font-size: 0.95rem;
+        text-align: left;
+        font-weight: 600;
+      }
+      input[type="text"],
+      input[type="password"],
+      input[type="email"] {
+        display: block;
+        width: 100%;
+        margin: 0;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.96);
+        color: #171717;
+        padding: 13px 14px;
+        outline: none;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease,
+          transform 0.2s ease;
+      }
+      input[type="text"]:focus,
+      input[type="password"]:focus,
+      input[type="email"]:focus {
+        border-color: rgba(248, 113, 113, 0.9);
+        box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.18);
+        transform: translateY(-1px);
+      }
+      form ul {
+        display: none;
+      }
+      form p:last-of-type {
+        margin-bottom: 18px;
+      }
+      button {
+        width: 100%;
+        margin: 0;
+        display: block;
+        padding: 13px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 14px;
+        font-weight: 700;
+        color: #fff;
+        background: linear-gradient(135deg, #ef4444, #f87171);
+        box-shadow: 0 10px 26px rgba(185, 28, 28, 0.35);
+        cursor: pointer;
+        transition:
+          transform 0.2s ease,
+          filter 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+      button:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.06);
+        box-shadow: 0 8px 22px rgba(185, 28, 28, 0.55);
+      }
+      .error {
+        color: #fecaca;
+        background: rgba(254, 202, 202, 0.12);
+        border: 1px solid rgba(252, 165, 165, 0.35);
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-top: 12px;
+        text-align: center;
+      }
+      .message {
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-top: 12px;
+        text-align: center;
+        font-weight: 600;
+      }
+      .message.success {
+        color: #dcfce7;
+        background: rgba(34, 197, 94, 0.12);
+        border: 1px solid rgba(34, 197, 94, 0.35);
+      }
+      .info {
+        text-align: center;
+        color: #e5d5d5;
+        font-size: 0.92rem;
+        line-height: 1.45;
+        margin: 16px 0 0;
+      }
+      .auth-links {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .auth-links a {
+        text-decoration: none;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 999px;
+        padding: 10px 14px;
+        font-size: 0.92rem;
+        font-weight: 700;
+        transition:
+          transform 0.2s ease,
+          background 0.2s ease,
+          border-color 0.2s ease;
+      }
+      .auth-links a:hover {
+        transform: translateY(-1px);
+        background: rgba(248, 113, 113, 0.16);
+        border-color: rgba(248, 113, 113, 0.38);
+      }
+      .app-logo {
+        width: 112px;
+        height: auto;
+        border-radius: 50%;
+        border: 4px solid rgba(255, 255, 255, 0.44);
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+        animation: logoPulse 4.5s ease-in-out infinite;
+      }
+      form {
+        animation: fadeLift 620ms ease-out both;
+        animation-delay: 200ms;
+      }
+      .info {
+        animation: fadeLift 660ms ease-out both;
+        animation-delay: 280ms;
+      }
+      button {
+        position: relative;
+        overflow: hidden;
+      }
+      button::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -120%;
+        width: 55%;
+        height: 100%;
+        background: linear-gradient(
+          120deg,
+          transparent,
+          rgba(255, 255, 255, 0.25),
+          transparent
+        );
+        transform: skewX(-18deg);
+        animation: buttonShine 4.8s ease-in-out infinite;
+      }
+      @keyframes cardReveal {
+        from {
+          opacity: 0;
+          transform: translateY(16px) scale(0.985);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @keyframes driftGlow {
+        from {
+          transform: translate3d(0, 0, 0) scale(1);
+          opacity: 0.8;
+        }
+        to {
+          transform: translate3d(0, -10px, 0) scale(1.03);
+          opacity: 1;
+        }
+      }
+      @keyframes floatAura {
+        from {
+          transform: translate3d(0, 0, 0) scale(1);
+        }
+        to {
+          transform: translate3d(18px, 12px, 0) scale(1.08);
+        }
+      }
+      @keyframes logoPulse {
+        0%,
+        100% {
+          transform: translateY(0) scale(1);
+          box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+        }
+        50% {
+          transform: translateY(-3px) scale(1.03);
+          box-shadow: 0 16px 34px rgba(0, 0, 0, 0.34);
+        }
+      }
+      @keyframes buttonShine {
+        0% {
+          left: -120%;
+        }
+        35% {
+          left: 130%;
+        }
+        100% {
+          left: 130%;
+        }
+      }
+      @keyframes fadeLift {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .card,
+        .logo-wrap,
+        h2,
+        form,
+        .info,
+        body::before,
+        .card::after,
+        .app-logo,
+        button::before {
+          animation: none;
+        }
+      }
+      @media (max-width: 520px) {
+        .card {
+          padding: 22px 16px 20px;
+          border-radius: 22px;
+          width: min(520px, 95vw);
+        }
+        .app-logo {
+          width: 96px;
+        }
+        h2 {
+          margin-bottom: 16px;
+        }
+        .page-wrap {
+          padding: 14px 12px 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-wrap">
+      <div class="card">
+        <div class="logo-wrap">
+          <img
+            class="app-logo"
+            src="{% static 'Logo.jpg' %}"
+            alt="Hangarin app logo"
+          />
+        </div>
+        <h2>Hangarin App</h2>
+        <form method="post">
+          {% csrf_token %} {{ form.as_p }}
+          <button type="submit">Log In</button>
+        </form>
+        {% if messages %} {% for message in messages %}
+        <p class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+          {{ message }}
+        </p>
+        {% endfor %} {% endif %} {% if form.errors %}
+        <p class="error">Invalid username or password.</p>
+        {% endif %}
+        <div class="auth-links">
+          <a href="{% url 'signup' %}">Sign up</a>
+          <a href="{% url 'password_reset' %}">Forgot password?</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

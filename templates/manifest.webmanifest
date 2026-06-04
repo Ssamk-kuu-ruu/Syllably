@@ -1,0 +1,16 @@
+{
+  "name": "Hangarin Task Manager",
+  "short_name": "Hangarin",
+  "description": "Track and manage your tasks in Hangarin.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#120000",
+  "theme_color": "#410000",
+  "icons": [
+    {
+      "src": "{% load static %}{% static 'Logo.jpg' %}",
+      "type": "image/jpeg"
+    }
+  ]
+}

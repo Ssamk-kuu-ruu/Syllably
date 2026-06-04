@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sub-Tasks - Hangarin</title>
+    {% include 'includes/pwa_head.html' %}
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: #fff;
+        background: linear-gradient(135deg, #410000, #120000);
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        min-height: 100vh;
+      }
+      .sidebar {
+        background: rgba(20, 0, 0, 0.92);
+        border-right: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 20px;
+      }
+      .sidebar h3 {
+        margin-top: 0;
+        color: #ffd6d6;
+      }
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0 0;
+      }
+      .sidebar li {
+        margin: 11px 0;
+      }
+      .sidebar a {
+        color: #fff;
+        text-decoration: none;
+        display: block;
+        padding: 10px 12px;
+        border-radius: 8px;
+      }
+      .sidebar a:hover {
+        background: rgba(255, 29, 29, 0.25);
+      }
+      .content {
+        padding: 24px;
+      }
+      .card {
+        background: rgba(24, 0, 0, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .mobile-nav {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto;
+        background: linear-gradient(135deg, rgba(30, 0, 5, 0.92), rgba(15, 0, 2, 0.95));
+        border: 1.5px solid rgba(248, 113, 113, 0.25);
+        border-radius: 24px;
+        z-index: 50;
+        backdrop-filter: blur(20px);
+        padding: 12px 10px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      }
+      .mobile-nav-items {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      .mobile-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 58px;
+        height: 58px;
+        text-decoration: none;
+        color: #e8e8e8;
+        font-size: 1.45rem;
+        border-radius: 14px;
+        transition: all 0.25s ease;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .mobile-nav-item.active {
+        color: #f87171;
+        background: rgba(248, 113, 113, 0.15);
+        border-color: rgba(248, 113, 113, 0.4);
+      }
+      .mobile-nav-item.center-btn {
+        width: 66px;
+        height: 66px;
+        background: linear-gradient(135deg, #f87171, #dc2626);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        font-size: 1.75rem;
+        box-shadow: 0 12px 32px rgba(248, 113, 113, 0.35);
+      }
+      .mobile-nav-label {
+        font-size: 0.62rem;
+        margin-top: 5px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: left;
+      }
+      th {
+        color: #ffd8d8;
+      }
+      .pagination {
+        margin-top: 14px;
+      }
+      .pagination a,
+      .pagination span {
+        margin-right: 8px;
+        color: #fff;
+      }
+      @media (max-width: 900px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 640px) {
+        .sidebar {
+          display: none;
+        }
+        .mobile-nav {
+          display: flex;
+        }
+        body {
+          padding-bottom: 130px;
+        }
+        .content {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <h3>Navigation</h3>
+        <ul>
+          <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+          <li><a href="{% url 'tasks' %}">Tasks</a></li>
+          <li><a href="{% url 'subtasks' %}">Sub-Tasks</a></li>
+          <li><a href="{% url 'notes' %}">Notes</a></li>
+          <li><a href="{% url 'priorities' %}">Priorities</a></li>
+          <li><a href="{% url 'categories' %}">Categories</a></li>
+        </ul>
+      </aside>
+      <main class="content">
+        <h1>Sub-Tasks</h1>
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Parent Task</th>
+                <th>Status</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for subtask in subtasks %}
+              <tr>
+                <td>{{ subtask.title }}</td>
+                <td>{{ subtask.parent_task.title }}</td>
+                <td>{{ subtask.status }}</td>
+                <td>{{ subtask.created_at|date:'Y-m-d H:i' }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="4">No sub-tasks yet.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% if is_paginated %}
+        <div class="pagination">
+          {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+          {% endif %}
+          <span
+            >Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages
+            }}</span
+          >
+          {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}">Next</a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </main>
+    </div>
+    <nav class="mobile-nav">
+      <div class="mobile-nav-items">
+        <a href="{% url 'dashboard' %}" class="mobile-nav-item" title="Dashboard">
+          <span>🏠</span>
+          <span class="mobile-nav-label">Home</span>
+        </a>
+        <a href="{% url 'tasks' %}" class="mobile-nav-item" title="Tasks">
+          <span>✓</span>
+          <span class="mobile-nav-label">Tasks</span>
+        </a>
+        <a href="{% url 'task_create' %}" class="mobile-nav-item center-btn" title="Create task">
+          <span>+</span>
+        </a>
+        <a href="{% url 'subtasks' %}" class="mobile-nav-item active" title="Sub-Tasks">
+          <span>○</span>
+          <span class="mobile-nav-label">Sub</span>
+        </a>
+        <a href="{% url 'profile' %}" class="mobile-nav-item" title="Profile">
+          <span>👤</span>
+          <span class="mobile-nav-label">Profile</span>
+        </a>
+      </div>
+    </nav>
+  </body>
+</html>

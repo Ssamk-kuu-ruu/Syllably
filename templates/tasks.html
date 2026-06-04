@@ -1,0 +1,1194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tasks - Hangarin</title>
+    {% include 'includes/pwa_head.html' %}
+    <style>
+      :root {
+        --bg-1: #1e0005;
+        --bg-2: #0f0002;
+        --text: #ffffff;
+        --sub: #ffe4e4;
+        --accent: #f87171;
+        --card: rgba(35, 0, 0, 0.7);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--text);
+        background: linear-gradient(135deg, #410000, #120000);
+        overflow: auto;
+      }
+      .pagination {
+        margin-top: 12px;
+        padding: 6px 0;
+        text-align: center;
+      }
+      .pagination .page-links {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .pagination a,
+      .pagination span {
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 0.95rem;
+        width: 28px;
+        height: 28px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        text-decoration: none;
+      }
+      .pagination a {
+        background: transparent;
+        border: none;
+      }
+      .pagination a:hover {
+        background: rgba(255, 137, 137, 0.35);
+        color: #fff;
+      }
+      .pagination span.active {
+        background: rgba(0, 82, 212, 0.86);
+        color: #ffffff;
+        border: none;
+      }
+
+      .topbar {
+        padding: 18px 26px;
+        background: linear-gradient(
+          90deg,
+          rgba(35, 0, 0, 0.95),
+          rgba(0, 0, 0, 0.92)
+        );
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .topbar .brand-area {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .app-logo {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .brand {
+        font-size: clamp(1.1rem, 3vw, 1.6rem);
+        font-weight: 700;
+        color: #fff1f1;
+        text-shadow: 0 0 12px rgba(255, 255, 255, 0.35);
+      }
+      .logout-btn {
+        color: #fff;
+        background: linear-gradient(90deg, #b91c1c, #f87171);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 9px;
+        padding: 8px 14px;
+        text-decoration: none;
+        font-weight: 700;
+      }
+      .top-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        position: relative;
+      }
+      .profile-menu-wrap {
+        position: relative;
+      }
+      .profile-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border: none;
+        padding: 0;
+        border-radius: 50%;
+        overflow: hidden;
+        text-decoration: none;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        background: linear-gradient(120deg, #f87171, #b91c1c);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+        cursor: pointer;
+      }
+      .profile-avatar {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-weight: 800;
+        font-size: 1rem;
+      }
+      .profile-panel {
+        position: absolute;
+        top: calc(100% + 12px);
+        right: 0;
+        width: 300px;
+        background: #ffffff;
+        color: #1f1f1f;
+        border-radius: 14px;
+        box-shadow: 0 22px 50px rgba(0, 0, 0, 0.28);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        z-index: 40;
+        display: none;
+      }
+      .profile-panel.open {
+        display: block;
+      }
+      .profile-panel-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 18px;
+      }
+      .profile-panel-head .profile-photo {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: linear-gradient(120deg, #f87171, #b91c1c);
+        display: grid;
+        place-items: center;
+        color: #fff;
+        font-size: 1.05rem;
+        font-weight: 800;
+      }
+      .profile-panel-head .profile-name {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #4a4a4a;
+      }
+      .profile-panel-head .profile-role {
+        color: #8b8b8b;
+        font-size: 0.88rem;
+        margin-top: 2px;
+      }
+      .profile-tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-top: 1px solid #ececec;
+        border-bottom: 1px solid #ececec;
+        background: #fafafa;
+      }
+      .profile-tabs a {
+        text-align: center;
+        padding: 12px 10px;
+        color: #555;
+        text-decoration: none;
+        font-weight: 600;
+        border-bottom: 2px solid transparent;
+      }
+      .profile-tabs a.active {
+        color: #1d74ff;
+        border-bottom-color: #1d74ff;
+      }
+      .profile-menu {
+        padding: 8px 0;
+      }
+      .profile-menu a,
+      .profile-menu button {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 18px;
+        color: #2a2a2a;
+        text-decoration: none;
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+        font: inherit;
+        text-align: left;
+      }
+      .profile-menu a:hover,
+      .profile-menu button:hover {
+        background: #f5f7fb;
+      }
+      .profile-menu .icon {
+        width: 18px;
+        text-align: center;
+        color: #5a5a5a;
+        flex: 0 0 18px;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        min-height: calc(100vh - 60px);
+      }
+      .sidebar {
+        background: rgba(20, 0, 0, 0.92);
+        border-right: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 20px;
+      }
+      .sidebar h3 {
+        margin-top: 0;
+        color: #ffd6d6;
+      }
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0 0;
+      }
+      .sidebar li {
+        margin: 11px 0;
+      }
+      .sidebar a {
+        color: #fff;
+        text-decoration: none;
+        display: block;
+        padding: 10px 12px;
+        border-radius: 8px;
+        transition: background 0.2s ease;
+      }
+      .sidebar a:hover {
+        background: rgba(255, 29, 29, 0.25);
+      }
+      .content {
+        padding: 24px;
+      }
+      .header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        padding: 18px;
+        border-radius: 16px;
+        background: linear-gradient(
+          145deg,
+          rgba(58, 0, 0, 0.78),
+          rgba(22, 0, 0, 0.72)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+      }
+      .header-title-wrap {
+        display: grid;
+        gap: 6px;
+      }
+      .header h1 {
+        margin: 0;
+        color: #fff;
+        font-size: clamp(1.6rem, 4vw, 2rem);
+        letter-spacing: 0.04em;
+      }
+      .header-sub {
+        margin: 0;
+        color: #ffd7d7;
+        font-size: 0.92rem;
+      }
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        background: rgba(0, 0, 0, 0.32);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 14px;
+        padding: 10px;
+      }
+      .toolbar input[type="search"],
+      .toolbar select {
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 8px;
+        padding: 8px 12px;
+        min-width: 160px;
+        background: rgba(0, 0, 0, 0.45);
+        color: #fff;
+        outline: none;
+        transition:
+          box-shadow 0.2s ease,
+          border-color 0.2s ease;
+      }
+      .toolbar input[type="search"]:focus,
+      .toolbar select:focus {
+        border-color: #ff8c8c;
+        box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2);
+        background: rgba(0, 0, 0, 0.58);
+      }
+      .new-task-btn {
+        border: 1px solid rgba(0, 154, 230, 0.85);
+        border-radius: 9px;
+        background: linear-gradient(
+          120deg,
+          rgba(24, 129, 249, 0.95),
+          rgba(33, 218, 255, 0.9)
+        );
+        color: #fff;
+        padding: 8px 14px;
+        text-decoration: none;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        margin-right: 8px;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+      .new-task-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 13px rgba(20, 153, 255, 0.4);
+      }
+      .toolbar button {
+        border: 1px solid rgba(255, 255, 255, 0.38);
+        border-radius: 10px;
+        background: linear-gradient(
+          120deg,
+          rgba(217, 70, 70, 1),
+          rgba(185, 28, 28, 0.9)
+        );
+        color: #fff;
+        padding: 9px 16px;
+        cursor: pointer;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+      .toolbar button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      }
+      .toolbar button:active {
+        transform: translateY(0);
+      }
+      .main-card {
+        background: rgba(24, 0, 0, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+      }
+      .table-head {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        font-weight: 700;
+        color: #ffd8d8;
+        background: rgba(0, 0, 0, 0.35);
+      }
+      .table-body {
+        overflow: visible;
+      }
+      .table-row {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        align-items: center;
+        padding: 12px 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .table-row:nth-child(odd) {
+        background: rgba(255, 255, 255, 0.03);
+      }
+      .table-row span {
+        font-size: 0.92rem;
+        overflow-wrap: anywhere;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+      .pending {
+        background: rgba(255, 99, 99, 0.3);
+        color: #fff;
+      }
+      .progress {
+        background: rgba(255, 173, 100, 0.4);
+        color: #fff;
+      }
+      .completed {
+        background: rgba(163, 255, 163, 0.35);
+        color: #073307;
+      }
+      .act-btn {
+        background: transparent;
+        border: none;
+        color: #fff;
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 4px;
+        display: inline-block;
+        text-decoration: none;
+      }
+      .act-btn:hover {
+        color: #f5c9c9;
+        transform: scale(1.1);
+      }
+      .complete-form {
+        display: inline;
+      }
+      .complete-btn {
+        color: #8cffbf;
+      }
+      .complete-btn:hover {
+        color: #b4ffd3;
+      }
+      .task-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        z-index: 9999;
+      }
+      .task-overlay.open {
+        display: flex !important;
+      }
+      .task-overlay-card {
+        width: min(560px, 100%);
+        background: linear-gradient(
+          145deg,
+          rgba(58, 0, 0, 0.95),
+          rgba(22, 0, 0, 0.96)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 14px;
+        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4);
+        overflow: auto;
+        max-height: 90vh;
+      }
+      .task-overlay-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(0, 0, 0, 0.28);
+      }
+      .task-overlay-head h3 {
+        margin: 0;
+        color: #ffe4e4;
+      }
+      .task-overlay-close {
+        border: none;
+        background: transparent;
+        color: #fff;
+        font-size: 1.25rem;
+        cursor: pointer;
+      }
+      .task-overlay-body {
+        padding: 16px;
+        display: grid;
+        gap: 10px;
+      }
+      .task-detail-label {
+        color: #ffb4b4;
+        font-size: 0.82rem;
+        letter-spacing: 0.03em;
+      }
+      .task-detail-value {
+        color: #fff;
+        font-size: 0.95rem;
+      }
+      @media (max-width: 980px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          border-right: none;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+          padding: 14px 16px;
+        }
+        .sidebar ul {
+          display: flex;
+          gap: 8px;
+          overflow-x: auto;
+          padding-bottom: 6px;
+          margin-bottom: 0;
+        }
+        .sidebar li {
+          margin: 0;
+          flex: 0 0 auto;
+        }
+        .sidebar a {
+          white-space: nowrap;
+          padding: 8px 10px;
+        }
+        .content {
+          padding: 16px;
+        }
+      }
+      @media (max-width: 760px) {
+        .topbar {
+          padding: 12px;
+        }
+        .app-logo {
+          width: 36px;
+          height: 36px;
+        }
+        .header {
+          padding: 14px;
+          gap: 12px;
+        }
+        .header-sub {
+          font-size: 0.86rem;
+        }
+        .toolbar {
+          width: 100%;
+          display: grid;
+          grid-template-columns: 1fr;
+        }
+        .toolbar input[type="search"],
+        .toolbar select,
+        .toolbar button,
+        .new-task-btn {
+          width: 100%;
+          min-width: 0;
+          margin-right: 0;
+          text-align: center;
+        }
+        .table-head {
+          display: none;
+        }
+        .table-row {
+          grid-template-columns: 1fr;
+          gap: 8px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 10px;
+          margin: 10px;
+        }
+        .table-row > span:nth-child(1)::before {
+          content: "Title: ";
+          color: #ffbcbc;
+          font-weight: 700;
+        }
+        .table-row > span:nth-child(2)::before {
+          content: "Status: ";
+          color: #ffbcbc;
+          font-weight: 700;
+        }
+        .table-row > span:nth-child(3)::before {
+          content: "Deadline: ";
+          color: #ffbcbc;
+          font-weight: 700;
+        }
+        .table-row > span:nth-child(4)::before {
+          content: "Actions: ";
+          color: #ffbcbc;
+          font-weight: 700;
+          margin-right: 8px;
+        }
+        .table-row > span:nth-child(4) {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+        .sidebar {
+          display: none;
+        }
+        .mobile-nav {
+          display: flex;
+        }
+        body {
+          padding-bottom: 140px;
+        }
+        .content {
+          padding-bottom: 40px;
+        }
+      }
+      /* Mobile Navigation Overlay */
+      .mobile-nav {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto;
+        height: auto;
+        background: linear-gradient(
+          135deg,
+          rgba(30, 0, 5, 0.92),
+          rgba(15, 0, 2, 0.95)
+        );
+        border: 1.5px solid rgba(248, 113, 113, 0.25);
+        border-radius: 24px;
+        z-index: 50;
+        backdrop-filter: blur(20px);
+        padding: 14px 12px;
+        box-shadow:
+          0 20px 60px rgba(0, 0, 0, 0.6),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
+      .mobile-nav-items {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: auto;
+        padding: 0;
+        gap: 12px;
+      }
+      .mobile-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        text-decoration: none;
+        color: #e8e8e8;
+        font-size: 1.5rem;
+        border-radius: 16px;
+        transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .mobile-nav-item:hover {
+        background: rgba(248, 113, 113, 0.12);
+        border-color: rgba(248, 113, 113, 0.3);
+        color: #f87171;
+        transform: translateY(-4px) scale(1.12);
+        box-shadow: 0 12px 24px rgba(248, 113, 113, 0.2);
+      }
+      .mobile-nav-item.active {
+        color: #f87171;
+        background: rgba(248, 113, 113, 0.15);
+        border-color: rgba(248, 113, 113, 0.4);
+      }
+      .mobile-nav-item.active::after {
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        width: 6px;
+        height: 6px;
+        background: #f87171;
+        border-radius: 50%;
+      }
+      .mobile-nav-item.center-btn {
+        width: 68px;
+        height: 68px;
+        background: linear-gradient(135deg, #f87171, #dc2626);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        color: #ffffff;
+        font-size: 1.8rem;
+        box-shadow:
+          0 12px 32px rgba(248, 113, 113, 0.35),
+          inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        margin: 0 6px;
+        position: relative;
+        overflow: hidden;
+      }
+      .mobile-nav-item.center-btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .mobile-nav-item.center-btn:hover {
+        background: linear-gradient(135deg, #fb7676, #ea3b3b);
+        box-shadow:
+          0 16px 40px rgba(248, 113, 113, 0.45),
+          inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        transform: scale(1.15);
+      }
+      .mobile-nav-label {
+        font-size: 0.62rem;
+        margin-top: 6px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: inherit;
+        opacity: 0.85;
+      }
+      @media (max-width: 640px) {
+        .mobile-nav {
+          display: flex;
+        }
+        body {
+          padding-bottom: 80px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand-area">
+        <img
+          class="app-logo"
+          src="{% static 'Logo.jpg' %}"
+          alt="Hangarin app logo"
+        />
+        <div class="brand">Hangarin App Tasks</div>
+      </div>
+      <div class="top-actions">
+        <div class="profile-menu-wrap" id="profileMenuWrap">
+          <button
+            type="button"
+            class="profile-link"
+            id="profileMenuToggle"
+            aria-label="Open profile menu"
+            title="Open profile menu"
+          >
+            <span class="profile-avatar"
+              >{{ user.username|slice:":1"|upper }}</span
+            >
+          </button>
+          <div class="profile-panel" id="profilePanel" aria-hidden="true">
+            <div class="profile-panel-head">
+              <div class="profile-photo">
+                {{ user.username|slice:":1"|upper }}
+              </div>
+              <div>
+                <div class="profile-name">
+                  {{ user.get_full_name|default:user.username }}
+                </div>
+                <div class="profile-role">Admin</div>
+              </div>
+            </div>
+            <div class="profile-tabs">
+              <a class="active" href="{% url 'profile' %}">Profile</a>
+              <a href="{% url 'settings' %}">Setting</a>
+            </div>
+            <div class="profile-menu">
+              <a href="{% url 'profile_edit' %}"
+                ><span class="icon">✎</span>Edit Profile</a
+              >
+              <a href="{% url 'profile' %}"
+                ><span class="icon">👤</span>View Profile</a
+              >
+              <a href="{% url 'social_profile' %}"
+                ><span class="icon">◎</span>Social Profile</a
+              >
+              <a href="{% url 'billing' %}"
+                ><span class="icon">💳</span>Billing</a
+              >
+              <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit"><span class="icon">⏻</span>Logout</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <h3>Navigation</h3>
+        <ul>
+          <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+          <li><a href="{% url 'tasks' %}">Tasks</a></li>
+          <li><a href="{% url 'subtasks' %}">Sub-Tasks</a></li>
+          <li><a href="{% url 'notes' %}">Notes</a></li>
+          <li><a href="{% url 'priorities' %}">Priorities</a></li>
+          <li><a href="{% url 'categories' %}">Categories</a></li>
+        </ul>
+      </aside>
+
+      <main class="content">
+        <div class="header">
+          <div class="header-title-wrap">
+            <h1>Task Management</h1>
+            <p class="header-sub">
+              Filter and manage your priorities in one clean workspace.
+            </p>
+          </div>
+          <div class="toolbar">
+            <input
+              type="search"
+              placeholder="Search by title or status..."
+              id="taskSearch"
+              oninput="filterTasks()"
+            />
+            <select id="statusFilter" onchange="filterTasks()">
+              <option value="all">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="in progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+            <select id="priorityFilter" onchange="filterTasks()">
+              <option value="all">All Priorities</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+            <button onclick="resetSearch()">Clear</button>
+          </div>
+        </div>
+
+        <div class="main-card">
+          <div class="table-head">
+            <span>Title</span>
+            <span>Status</span>
+            <span>Deadline</span>
+            <span>Actions</span>
+          </div>
+          <div class="table-body" id="taskTable">
+            {% for task in page_obj %}
+            <div
+              class="table-row"
+              data-title="{{ task.title|escape }}"
+              data-description="{{ task.description|default_if_none:''|striptags|escape }}"
+              data-deadline-display="{{ task.deadline|date:'M d, Y H:i' }}"
+              data-status="{{ task.status|lower }}"
+              data-status-display="{{ task.status }}"
+              data-priority="{{ task.priority.name|default_if_none:'unknown'|lower }}"
+              data-priority-display="{{ task.priority.name|default_if_none:'Unknown' }}"
+              data-category="{{ task.category.name|default_if_none:'unknown'|lower }}"
+              data-category-display="{{ task.category.name|default_if_none:'Unknown' }}"
+            >
+              <span>{{ task.title }}</span>
+              <span
+                ><span
+                  class="badge {% if task.status == 'Pending' %}pending{% elif task.status == 'In Progress' %}progress{% else %}completed{% endif %}"
+                  >{{ task.status }}</span
+                ></span
+              >
+              <span>{{ task.deadline|date:'Y-m-d' }}</span>
+              <span>
+                <button
+                  type="button"
+                  class="act-btn view-task-btn"
+                  title="View"
+                >
+                  👁️
+                </button>
+                <a
+                  href="{% url 'task_update' task.id %}"
+                  class="act-btn"
+                  title="Edit"
+                  >✏️</a
+                >
+                <form
+                  method="post"
+                  action="{% url 'task_complete' task.id %}"
+                  class="complete-form"
+                >
+                  {% csrf_token %}
+                  <button
+                    type="submit"
+                    class="act-btn complete-btn"
+                    title="Mark as Complete"
+                    {% if task.status == 'Completed' %}disabled{% endif %}
+                  >
+                    ✓
+                  </button>
+                </form>
+              </span>
+            </div>
+            {% empty %}
+            <div class="table-row">
+              <span colspan="4"
+                >No tasks found. Run
+                <code>python manage.py populate_data</code>.</span
+              >
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="pagination">
+          <div class="page-links">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="active">{{ num }}</span>
+            {% else %}
+            <a href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="task-overlay" id="taskOverlay" aria-hidden="true">
+          <div
+            class="task-overlay-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="overlayTitle"
+          >
+            <div class="task-overlay-head">
+              <h3 id="overlayTitle">Task Details</h3>
+              <button
+                type="button"
+                class="task-overlay-close"
+                id="closeTaskOverlay"
+                aria-label="Close"
+              >
+                x
+              </button>
+            </div>
+            <div class="task-overlay-body">
+              <div>
+                <div class="task-detail-label">Title</div>
+                <div class="task-detail-value" id="overlayTaskTitle"></div>
+              </div>
+              <div>
+                <div class="task-detail-label">Status</div>
+                <div class="task-detail-value" id="overlayTaskStatus"></div>
+              </div>
+              <div>
+                <div class="task-detail-label">Deadline</div>
+                <div class="task-detail-value" id="overlayTaskDeadline"></div>
+              </div>
+              <div>
+                <div class="task-detail-label">Priority</div>
+                <div class="task-detail-value" id="overlayTaskPriority"></div>
+              </div>
+              <div>
+                <div class="task-detail-label">Category</div>
+                <div class="task-detail-value" id="overlayTaskCategory"></div>
+              </div>
+              <div>
+                <div class="task-detail-label">Description</div>
+                <div
+                  class="task-detail-value"
+                  id="overlayTaskDescription"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        function filterTasks() {
+          const query = document
+            .getElementById("taskSearch")
+            .value.toLowerCase();
+          const statusFilter = document.getElementById("statusFilter").value;
+          const priorityFilter =
+            document.getElementById("priorityFilter").value;
+          const rows = document.querySelectorAll("#taskTable .table-row");
+
+          rows.forEach((row) => {
+            const title = row.children[0].textContent.toLowerCase();
+            const status = row.dataset.status;
+            const priority = row.dataset.priority;
+
+            let matchesSearch = title.includes(query) || status.includes(query);
+            let matchesStatus =
+              statusFilter === "all" || status === statusFilter;
+            let matchesPriority =
+              priorityFilter === "all" || priority === priorityFilter;
+
+            if (matchesSearch && matchesStatus && matchesPriority) {
+              row.style.display = "";
+            } else {
+              row.style.display = "none";
+            }
+          });
+        }
+
+        function resetSearch() {
+          document.getElementById("taskSearch").value = "";
+          document.getElementById("statusFilter").value = "all";
+          document.getElementById("priorityFilter").value = "all";
+          filterTasks();
+        }
+
+        // Keep compatibility with inline template handlers.
+        window.filterTasks = filterTasks;
+        window.resetSearch = resetSearch;
+
+        const taskOverlay = document.getElementById("taskOverlay");
+        const closeTaskOverlay = document.getElementById("closeTaskOverlay");
+
+        function openTaskOverlay(row) {
+          console.log("Opening overlay, data:", {
+            title: row.dataset.title,
+            status: row.dataset.statusDisplay,
+            deadline: row.dataset.deadlineDisplay,
+            priority: row.dataset.priorityDisplay,
+            category: row.dataset.categoryDisplay,
+            description: row.dataset.description,
+          });
+
+          const titleEl = document.getElementById("overlayTaskTitle");
+          const statusEl = document.getElementById("overlayTaskStatus");
+          const deadlineEl = document.getElementById("overlayTaskDeadline");
+          const priorityEl = document.getElementById("overlayTaskPriority");
+          const categoryEl = document.getElementById("overlayTaskCategory");
+          const descEl = document.getElementById("overlayTaskDescription");
+
+          if (titleEl) titleEl.textContent = row.dataset.title || "-";
+          if (statusEl) statusEl.textContent = row.dataset.statusDisplay || "-";
+          if (deadlineEl)
+            deadlineEl.textContent = row.dataset.deadlineDisplay || "-";
+          if (priorityEl)
+            priorityEl.textContent = row.dataset.priorityDisplay || "-";
+          if (categoryEl)
+            categoryEl.textContent = row.dataset.categoryDisplay || "-";
+          if (descEl)
+            descEl.textContent = row.dataset.description || "No description";
+
+          if (taskOverlay) {
+            taskOverlay.classList.add("open");
+            taskOverlay.setAttribute("aria-hidden", "false");
+          }
+        }
+
+        function hideTaskOverlay() {
+          if (taskOverlay) {
+            taskOverlay.classList.remove("open");
+            taskOverlay.setAttribute("aria-hidden", "true");
+          }
+        }
+
+        document.querySelectorAll(".view-task-btn").forEach((button) => {
+          button.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const row = button.closest(".table-row");
+            if (row) {
+              openTaskOverlay(row);
+            }
+          });
+        });
+
+        if (closeTaskOverlay) {
+          closeTaskOverlay.addEventListener("click", hideTaskOverlay);
+        }
+
+        if (taskOverlay) {
+          taskOverlay.addEventListener("click", (event) => {
+            if (event.target === taskOverlay) {
+              hideTaskOverlay();
+            }
+          });
+        }
+
+        document.addEventListener("keydown", (event) => {
+          if (
+            event.key === "Escape" &&
+            taskOverlay &&
+            taskOverlay.classList.contains("open")
+          ) {
+            hideTaskOverlay();
+          }
+        });
+      });
+    </script>
+    <script>
+      (function () {
+        const wrap = document.getElementById("profileMenuWrap");
+        const toggle = document.getElementById("profileMenuToggle");
+        const panel = document.getElementById("profilePanel");
+
+        if (!wrap || !toggle || !panel) return;
+
+        const closePanel = () => {
+          panel.classList.remove("open");
+          panel.setAttribute("aria-hidden", "true");
+        };
+
+        toggle.addEventListener("click", function () {
+          const isOpen = panel.classList.contains("open");
+          panel.classList.toggle("open", !isOpen);
+          panel.setAttribute("aria-hidden", isOpen ? "true" : "false");
+        });
+
+        document.addEventListener("click", function (event) {
+          if (!wrap.contains(event.target)) closePanel();
+        });
+
+        document.addEventListener("keydown", function (event) {
+          if (event.key === "Escape") closePanel();
+        });
+      })();
+    </script>
+    <!-- Mobile Navigation Overlay -->
+    <nav class="mobile-nav">
+      <div class="mobile-nav-items">
+        <a
+          href="{% url 'dashboard' %}"
+          class="mobile-nav-item"
+          title="Dashboard"
+        >
+          <span>🏠</span>
+          <span class="mobile-nav-label">Home</span>
+        </a>
+        <a
+          href="{% url 'tasks' %}"
+          class="mobile-nav-item active"
+          title="Tasks"
+        >
+          <span>✓</span>
+          <span class="mobile-nav-label">Tasks</span>
+        </a>
+        <a
+          href="{% url 'task_create' %}"
+          class="mobile-nav-item center-btn"
+          title="Create new task"
+        >
+          <span>+</span>
+        </a>
+        <a
+          href="{% url 'subtasks' %}"
+          class="mobile-nav-item"
+          title="Sub-Tasks"
+        >
+          <span>○</span>
+          <span class="mobile-nav-label">Sub</span>
+        </a>
+        <a href="{% url 'profile' %}" class="mobile-nav-item" title="Profile">
+          <span>👤</span>
+          <span class="mobile-nav-label">Profile</span>
+        </a>
+      </div>
+    </nav>
+    <script>
+      // Mobile nav active state
+      (function () {
+        const mobileNavItems = document.querySelectorAll(".mobile-nav-item");
+        const currentPath = window.location.pathname;
+
+        mobileNavItems.forEach((item) => {
+          const href = item.getAttribute("href");
+          if (
+            href &&
+            currentPath.includes(href.split("/").filter(Boolean)[0])
+          ) {
+            item.classList.add("active");
+          } else {
+            item.classList.remove("active");
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

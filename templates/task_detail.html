@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Task Details - Hangarin</title>
+    {% include 'includes/pwa_head.html' %}
+    <style>
+      body {
+        margin: 0;
+        font-family:
+          Segoe UI,
+          Tahoma,
+          Geneva,
+          Verdana,
+          sans-serif;
+        background: linear-gradient(135deg, #410000, #120000);
+        color: #fff;
+      }
+      .wrap {
+        max-width: 900px;
+        margin: 24px auto;
+        padding: 0 16px;
+      }
+      .card {
+        background: rgba(24, 0, 0, 0.82);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 14px;
+        padding: 20px;
+      }
+      .label {
+        color: #ffc5c5;
+        font-size: 0.9rem;
+        margin-top: 12px;
+      }
+      .value {
+        margin-top: 4px;
+      }
+      .actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .btn {
+        text-decoration: none;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 8px;
+        padding: 8px 12px;
+      }
+      .btn.edit {
+        background: rgba(20, 137, 255, 0.75);
+      }
+      .btn.delete {
+        background: rgba(199, 38, 38, 0.82);
+      }
+      .btn.back {
+        background: rgba(255, 255, 255, 0.12);
+      }
+      @media (max-width: 640px) {
+        .wrap {
+          margin: 12px auto;
+          padding: 0 10px;
+        }
+        .card {
+          padding: 14px;
+        }
+        .actions {
+          flex-direction: column;
+        }
+        .btn {
+          width: 100%;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <h2>{{ task.title }}</h2>
+        <div class="label">Status</div>
+        <div class="value">{{ task.status }}</div>
+        <div class="label">Priority</div>
+        <div class="value">{{ task.priority.name }}</div>
+        <div class="label">Category</div>
+        <div class="value">{{ task.category.name }}</div>
+        <div class="label">Deadline</div>
+        <div class="value">{{ task.deadline|date:'Y-m-d H:i' }}</div>
+        <div class="label">Description</div>
+        <div class="value" style="white-space: pre-wrap">
+          {{ task.description }}
+        </div>
+        <div class="actions">
+          <a class="btn edit" href="{% url 'task_update' task.id %}">Edit</a>
+          <a class="btn delete" href="{% url 'task_delete' task.id %}"
+            >Delete</a
+          >
+          <a class="btn back" href="{% url 'tasks' %}">Back</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
