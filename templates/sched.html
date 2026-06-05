@@ -3,11 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Settings - Syllably</title>
+    <title>Schedule - Syllably</title>
+    {% include 'includes/pwa_head.html' %}
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
     <style>
       :root {
         --primary-blue: #1a73e8;
@@ -15,6 +17,14 @@
         --text-dark-blue: #0f4c9c;
         --white: #ffffff;
         --border-dark: #000000;
+        --accent-yellow: #fff3a1;
+        --placeholder-blue: #7faee5;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
 
       body {
@@ -24,37 +34,62 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 40px 20px;
       }
 
-      .main-content {
+      .main-content-canvas {
         width: 100%;
         max-width: 800px;
-      }
-      .page-header {
-        font-family: "Playfair Display", serif;
-        font-size: 32px;
-        color: var(--text-dark-blue);
-        margin-bottom: 30px;
+        padding: 40px 24px 120px 24px;
       }
 
-      .settings-card {
+      /* Schedule Header */
+      .page-header-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background-color: var(--white);
+        border: 2.5px solid var(--border-dark);
+        padding: 10px 24px;
+        border-radius: 20px;
+        box-shadow: 4px 4px 0px var(--border-dark);
+        margin-bottom: 40px;
+      }
+
+      .page-header-badge h1 {
+        font-size: 22px;
+        color: var(--primary-blue);
+      }
+
+      /* Timeline Layout */
+      .timeline-container {
         background: var(--white);
         border: 2.5px solid var(--border-dark);
-        border-radius: 20px;
+        border-radius: 24px;
         padding: 30px;
         box-shadow: 6px 6px 0px var(--border-dark);
       }
 
-      .settings-option {
+      .time-slot {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 0;
-        border-bottom: 1px solid var(--bg-light-blue);
+        gap: 20px;
+        padding: 20px 0;
+        border-bottom: 1px dashed var(--placeholder-blue);
       }
 
-      /* Nav Dock */
+      .time-label {
+        font-weight: 800;
+        color: var(--text-dark-blue);
+        min-width: 80px;
+      }
+      .event-card {
+        background: var(--bg-light-blue);
+        padding: 15px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border-dark);
+        flex: 1;
+      }
+
+      /* Bottom Nav Dock */
       .bottom-overlay-dock {
         position: fixed;
         bottom: 24px;
@@ -116,29 +151,27 @@
     </style>
   </head>
   <body>
-    <main class="main-content">
-      <h1 class="page-header">Settings</h1>
+    <main class="main-content-canvas">
+      <div class="page-header-badge">
+        <h1>Schedule</h1>
+      </div>
 
-      <div class="settings-card">
-        <div class="settings-option">
-          <span>Account Notifications</span>
-          <input type="checkbox" checked />
+      <div class="timeline-container">
+        <div class="time-slot">
+          <div class="time-label">08:00 AM</div>
+          <div class="event-card">Software Engineering - Lecture</div>
         </div>
-        <div class="settings-option">
-          <span>Dark Mode</span>
-          <input type="checkbox" />
+        <div class="time-slot">
+          <div class="time-label">10:30 AM</div>
+          <div class="event-card">Advanced Calculus - Lab</div>
         </div>
-        <div class="settings-option">
-          <span>Profile Visibility</span>
-          <select>
-            <option>Public</option>
-            <option>Private</option>
-          </select>
+        <div class="time-slot">
+          <div class="time-label">02:00 PM</div>
+          <div class="event-card">Creative Writing Workshop</div>
         </div>
       </div>
     </main>
 
-    <!-- Navigation -->
     <nav class="bottom-overlay-dock">
       <a
         href="{% url 'home' %}"

@@ -119,7 +119,7 @@ class SocialProfileView(LoginRequiredMixin, TemplateView):
 
 
 class BillingView(LoginRequiredMixin, TemplateView):
-    template_name = 'billing.html'
+    template_name = 'courses.html'
 
 
 class TaskCreateView(LoginRequiredMixin, CreateView):

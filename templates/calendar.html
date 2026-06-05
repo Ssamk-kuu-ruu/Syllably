@@ -3,11 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Settings - Syllably</title>
+    <title>Calendar - Syllably</title>
+    {% include 'includes/pwa_head.html' %}
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
     <style>
       :root {
         --primary-blue: #1a73e8;
@@ -15,6 +17,14 @@
         --text-dark-blue: #0f4c9c;
         --white: #ffffff;
         --border-dark: #000000;
+        --accent-yellow: #fff3a1;
+        --placeholder-blue: #7faee5;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
 
       body {
@@ -24,37 +34,71 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 40px 20px;
       }
 
-      .main-content {
-        width: 100%;
-        max-width: 800px;
-      }
-      .page-header {
-        font-family: "Playfair Display", serif;
-        font-size: 32px;
-        color: var(--text-dark-blue);
-        margin-bottom: 30px;
-      }
-
-      .settings-card {
-        background: var(--white);
-        border: 2.5px solid var(--border-dark);
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 6px 6px 0px var(--border-dark);
+      .calendar-canvas {
+        width: 95%;
+        max-width: 1000px;
+        margin-top: 40px;
+        background: var(--bg-light-blue);
+        border: 3px solid var(--border-dark);
+        border-radius: 32px;
+        padding: 40px;
+        box-shadow: 10px 10px 0px rgba(0, 0, 0, 0.1);
+        position: relative;
       }
 
-      .settings-option {
+      .calendar-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 15px 0;
-        border-bottom: 1px solid var(--bg-light-blue);
+        margin-bottom: 30px;
+        font-family: "Playfair Display", serif;
       }
 
-      /* Nav Dock */
+      .month-year {
+        font-size: 48px;
+        font-style: italic;
+        color: var(--text-dark-blue);
+      }
+      .add-event-btn {
+        background-color: var(--primary-blue);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 20px;
+        border: 2px solid var(--border-dark);
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 3px 3px 0px var(--border-dark);
+        z-index: 50; /* Ensure button stays above calendar content */
+      }
+
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+      }
+      .day-label {
+        text-align: center;
+        font-weight: 800;
+        padding: 10px;
+        border: 2px solid var(--border-dark);
+        background: var(--white);
+        border-radius: 12px;
+      }
+      .calendar-day {
+        background: var(--white);
+        border: 2px solid var(--border-dark);
+        border-radius: 16px;
+        height: 120px;
+        padding: 10px;
+        font-weight: 700;
+      }
+      .calendar-day.active {
+        background-color: var(--accent-yellow);
+      }
+
+      /* Bottom Nav Dock - Fixed Position Fix */
       .bottom-overlay-dock {
         position: fixed;
         bottom: 24px;
@@ -116,29 +160,33 @@
     </style>
   </head>
   <body>
-    <main class="main-content">
-      <h1 class="page-header">Settings</h1>
+    <main class="calendar-canvas">
+      <header class="calendar-header">
+        <div class="month-year">June 2026</div>
+        <button class="add-event-btn" onclick="alert('Event Modal Triggered')">
+          + Event
+        </button>
+      </header>
 
-      <div class="settings-card">
-        <div class="settings-option">
-          <span>Account Notifications</span>
-          <input type="checkbox" checked />
+      <div class="calendar-grid">
+        <div class="day-label">Mon</div>
+        <div class="day-label">Tue</div>
+        <div class="day-label">Wed</div>
+        <div class="day-label">Thu</div>
+        <div class="day-label">Fri</div>
+        <div class="day-label">Sat</div>
+        <div class="day-label">Sun</div>
+
+        {% for i in "123456789012345678901234567890" %}
+        <div
+          class="calendar-day {% if forloop.counter == 5 %}active{% endif %}"
+        >
+          {{ forloop.counter }}
         </div>
-        <div class="settings-option">
-          <span>Dark Mode</span>
-          <input type="checkbox" />
-        </div>
-        <div class="settings-option">
-          <span>Profile Visibility</span>
-          <select>
-            <option>Public</option>
-            <option>Private</option>
-          </select>
-        </div>
+        {% endfor %}
       </div>
     </main>
 
-    <!-- Navigation -->
     <nav class="bottom-overlay-dock">
       <a
         href="{% url 'home' %}"

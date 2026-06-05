@@ -1,125 +1,947 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    {% load static %}
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sign Up - Hangarin</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Account - Syllably</title>
     {% include 'includes/pwa_head.html' %}
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
       :root {
-        --bg-start: #410000;
-        --bg-end: #120000;
-        --panel-border: rgba(255, 255, 255, 0.14);
-        --text-soft: #f6dada;
+        --primary-blue: #1a73e8;
+        --bg-light-blue: #cce2ff;
+        --text-dark-blue: #0f4c9c;
+        --placeholder-blue: #7faee5;
+        --calendar-yellow: #f4d03f;
+        --success-green: #2ecc71;
       }
+
       * {
         box-sizing: border-box;
-      }
-      body {
         margin: 0;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        min-height: 100svh;
-        color: #fff;
-        background:
-          radial-gradient(
-            circle at top,
-            rgba(248, 113, 113, 0.16),
-            transparent 36%
-          ),
-          linear-gradient(135deg, var(--bg-start), var(--bg-end));
-        display: grid;
-        place-items: center;
-        padding: 18px;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: linear-gradient(135deg, #bfe3ff 0%, #dbeeff 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+      }
+
+      /* Beautiful Wide Desktop Container Frame */
+      .page-container {
+        width: 100%;
+        max-width: 500px;
+        min-height: 85vh;
+        background-color: var(--bg-light-blue);
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(15, 76, 156, 0.15);
+        margin: 20px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+
+      /* Top Header Ribbon Panel Layout */
+      .header-banner {
+        background-color: var(--primary-blue);
+        padding: 18px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+        transition: opacity 0.3s ease;
+      }
+
+      .close-btn {
+        font-size: 26px;
+        cursor: pointer;
+        text-decoration: none;
+        color: white;
+        font-weight: 300;
+        line-height: 1;
+      }
+
+      .club-badge {
+        background-color: white;
+        color: var(--primary-blue);
+        padding: 6px 18px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-style: italic;
+        font-weight: 600;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Form Layout Canvas Frame */
+      .form-content {
+        padding: 35px 45px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+        transition: opacity 0.3s ease;
+      }
+
+      /* Centered Underlined Application Title */
+      .form-title {
+        font-family: "Playfair Display", serif;
+        color: var(--text-dark-blue);
+        font-size: 38px;
+        font-weight: 600;
+        margin-bottom: 30px;
+        text-align: center;
+        border-bottom: 2px solid var(--text-dark-blue);
+        padding-bottom: 2px;
+        display: inline-block;
+        letter-spacing: 0.5px;
+      }
+
+      /* Optional Image Selection Frame Wrapper Box */
+      .profile-upload-container {
+        width: 130px;
+        height: 155px;
+        background-color: white;
+        border: 2px solid var(--primary-blue);
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        position: relative;
+        cursor: pointer;
         overflow: hidden;
       }
-      .card {
-        width: min(520px, 94vw);
-        background: linear-gradient(
-          160deg,
-          rgba(41, 0, 0, 0.94),
-          rgba(18, 0, 2, 0.92)
-        );
-        border: 1px solid var(--panel-border);
-        border-radius: 26px;
-        padding: 28px 24px;
-        box-shadow:
-          0 24px 60px rgba(0, 0, 0, 0.45),
-          inset 0 1px 0 rgba(255, 255, 255, 0.08);
-        backdrop-filter: blur(18px);
+
+      .profile-upload-container svg {
+        width: 44px;
+        height: 44px;
+        fill: var(--primary-blue);
+        z-index: 1;
       }
-      .logo-wrap {
-        text-align: center;
-        margin-bottom: 12px;
+
+      .profile-upload-container input[type="file"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 2;
       }
-      .app-logo {
-        width: 102px;
-        border-radius: 50%;
-        border: 4px solid rgba(255, 255, 255, 0.44);
+
+      .profile-preview-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+        z-index: 3;
       }
-      h2 {
-        text-align: center;
-        margin: 6px 0 18px;
+
+      /* Custom Structured Form Input Blocks */
+      .form-group {
+        width: 100%;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        position: relative;
       }
-      label {
-        display: block;
+
+      /* Capsule Label Architecture */
+      .pill-label {
+        background-color: var(--primary-blue);
+        color: white;
+        padding: 5px 18px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
         margin-bottom: 6px;
-        color: var(--text-soft);
+        letter-spacing: 0.3px;
+      }
+
+      .pill-label-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        margin-bottom: 4px;
+      }
+
+      .birthday-note {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--text-dark-blue);
+        opacity: 0.85;
+        letter-spacing: 0.1px;
+      }
+
+      .custom-input {
+        width: 100%;
+        background: transparent;
+        border: none;
+        font-size: 16px;
+        color: var(--text-dark-blue);
+        padding: 8px 4px 4px 4px;
+        font-family: inherit;
+        font-weight: 400;
+      }
+
+      .custom-input::placeholder {
+        color: var(--placeholder-blue);
+        opacity: 0.85;
+      }
+
+      .custom-input:focus {
+        outline: none;
+      }
+
+      .dashed-divider {
+        width: 100%;
+        border: none;
+        border-top: 2px dashed var(--primary-blue);
+        margin-top: 2px;
+      }
+
+      /* Pledge Area UI Layout Container */
+      .pledge-wrapper {
+        width: 100%;
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .pledge-header-row {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 12px;
+        user-select: none;
+      }
+
+      .pledge-title {
+        font-size: 15px;
         font-weight: 600;
+        color: var(--text-dark-blue);
+        white-space: nowrap;
+        margin-right: 10px;
       }
-      input[type="text"],
-      input[type="email"],
-      input[type="password"] {
-        width: 100%;
-        padding: 13px 14px;
-        border-radius: 14px;
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        margin-bottom: 14px;
-        background: rgba(255, 255, 255, 0.96);
-        color: #171717;
+
+      .pledge-line-spacer {
+        flex-grow: 1;
+        border: none;
+        border-top: 1.5px solid var(--primary-blue);
       }
-      button {
+
+      .pledge-box {
         width: 100%;
-        padding: 13px;
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        border-radius: 14px;
-        font-weight: 700;
-        color: #fff;
-        background: linear-gradient(135deg, #ef4444, #f87171);
+        background-color: transparent;
+        border: 2px dashed var(--primary-blue);
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .pledge-checkbox {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: var(--primary-blue);
+        margin-top: 2px;
+        flex-shrink: 0;
+      }
+
+      .pledge-text {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-dark-blue);
+        line-height: 1.4;
+      }
+
+      /* Smooth Conditional Submit Button */
+      .submit-btn {
+        width: 100%;
+        background-color: var(--primary-blue);
+        color: white;
+        border: none;
+        padding: 15px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 24px;
+        box-shadow: 0 4px 14px rgba(26, 115, 232, 0.25);
+        border-radius: 0;
+        display: none;
+        animation: fadeIn 0.25s ease-out forwards;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(4px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Seamless Loading Progress Screen */
+      .loading-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: var(--bg-light-blue);
+        z-index: 200;
+      }
+
+      .spinner {
+        width: 60px;
+        height: 60px;
+        border: 5px solid rgba(26, 115, 232, 0.2);
+        border-top: 5px solid var(--primary-blue);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
+
+      .success-checkmark {
+        display: none;
+        width: 70px;
+        height: 70px;
+        background-color: var(--success-green);
+        border-radius: 50%;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 38px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      }
+
+      .loading-text {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-dark-blue);
+        text-align: center;
+        letter-spacing: 0.2px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes popIn {
+        0% {
+          transform: scale(0);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      /* Custom Aesthetic Calendar Card */
+      .calendar-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(15, 76, 156, 0.2);
+        backdrop-filter: blur(2px);
+        display: none;
+        justify-content: center;
+        align-items: flex-end;
+        z-index: 100;
+      }
+
+      .calendar-card {
+        width: 92%;
+        background: white;
+        border: 12px solid var(--calendar-yellow);
+        border-radius: 36px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(100%);
+        }
+        to {
+          transform: translateY(0);
+        }
+      }
+
+      .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 12px;
+        border-bottom: 1.5px solid #e0e0e0;
+        margin-bottom: 15px;
+      }
+
+      .calendar-header h3 {
+        font-size: 16px;
+        color: #333;
+        font-weight: 500;
+      }
+
+      .confirm-btn {
+        background: transparent;
+        border: 2px solid #333;
+        color: #333;
+        padding: 5px 20px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
         cursor: pointer;
       }
-      .note {
-        margin-top: 14px;
+
+      .calendar-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding: 0 5px;
+      }
+
+      .nav-arrow {
+        font-size: 18px;
+        cursor: pointer;
+        color: #333;
+        user-select: none;
+        padding: 0 10px;
+      }
+
+      .nav-selectors {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .month-display-label {
+        background-color: #eaeded;
+        color: #333;
+        padding: 4px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .year-dropdown {
+        background-color: #eaeded;
+        color: #333;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        border: none;
+        font-family: inherit;
+        cursor: pointer;
+        outline: none;
+      }
+
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        row-gap: 12px;
         text-align: center;
-        color: #e5d5d5;
       }
-      .note a {
-        color: #fff;
+
+      .weekday-label {
+        font-size: 13px;
+        color: #333;
+        font-weight: 500;
+        padding-bottom: 5px;
       }
+
+      .calendar-day {
+        font-size: 14px;
+        color: #333;
+        height: 32px;
+        width: 32px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: auto;
+        cursor: pointer;
+        border-radius: 50%;
+        font-weight: 500;
+      }
+
+      .calendar-day.empty {
+        cursor: default;
+      }
+
+      .calendar-day.active-day {
+        background-color: var(--calendar-yellow);
+        border: 1.5px solid #333;
+      }
+
       .errorlist {
-        color: #fecaca;
-        margin: 0 0 12px;
-        padding-left: 18px;
+        color: #d32f2f;
+        list-style: none;
+        font-size: 14px;
+        margin-bottom: 15px;
+        width: 100%;
+        text-align: left;
+      }
+
+      @media (max-width: 768px) {
+        .page-container {
+          margin: 0;
+          border-radius: 0;
+          min-height: 100vh;
+          max-width: 100%;
+        }
+        .form-content {
+          padding: 35px 24px;
+        }
       }
     </style>
   </head>
   <body>
-    <div class="card">
-      <div class="logo-wrap">
-        <img
-          class="app-logo"
-          src="{% static 'Logo.jpg' %}"
-          alt="Hangarin app logo"
-        />
+    <div class="page-container">
+      <div class="loading-screen" id="loadingOverlay">
+        <div class="spinner" id="loadingSpinner"></div>
+        <div class="success-checkmark" id="successCheck">&#10003;</div>
+        <div class="loading-text" id="loadingMessage">
+          Processing application...
+        </div>
       </div>
-      <h2>Create account</h2>
-      <form method="post">
-        {% csrf_token %} {{ form.as_p }}
-        <button type="submit">Sign Up</button>
-      </form>
-      <p class="note">
-        Already have an account? <a href="{% url 'login' %}">Log in</a>
-      </p>
+
+      <div class="header-banner" id="headerBanner">
+        <a href="{% url 'login' %}" class="close-btn">&times;</a>
+        <div class="club-badge">Syllably Club</div>
+      </div>
+
+      <div class="form-content" id="mainFormContent">
+        <h1 class="form-title">Membership Form</h1>
+
+        {% if form.errors %}
+        <ul class="errorlist">
+          {% for field, errors in form.errors.items %} {% for error in errors %}
+          <li><strong>{{ field|capfirst }}:</strong> {{ error }}</li>
+          {% endfor %} {% endfor %}
+        </ul>
+        {% endif %}
+
+        <form
+          id="signup-form"
+          method="POST"
+          enctype="multipart/form-data"
+          style="
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          "
+        >
+          {% csrf_token %}
+          <input
+            type="hidden"
+            id="hidden-email"
+            name="email"
+            value="temp_holder@syllably.club"
+          />
+
+          <div class="profile-upload-container">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14zM16 9c.55 0 1-.45 1-1s-.45-1-1-1-1 .45-1 1 .45 1 1 1z"
+              />
+            </svg>
+            <input
+              type="file"
+              id="profile-img-input"
+              name="profile_picture"
+              accept="image/png, image/jpeg"
+            />
+            <img
+              id="profile-preview"
+              class="profile-preview-img"
+              alt="Preview Image Window"
+            />
+          </div>
+
+          <div class="form-group">
+            <div class="pill-label">Name</div>
+            <input
+              type="text"
+              id="name-input"
+              class="custom-input"
+              placeholder="Enter your full name"
+              required
+              autocomplete="off"
+            />
+            <hr class="dashed-divider" />
+          </div>
+
+          <div class="form-group">
+            <div class="pill-label">Username</div>
+            <input
+              type="text"
+              id="username-input"
+              name="username"
+              class="custom-input"
+              placeholder="Choose a custom username"
+              required
+              autocomplete="off"
+            />
+            <hr class="dashed-divider" />
+          </div>
+
+          <div class="form-group">
+            <div class="pill-label-row">
+              <div class="pill-label">Birthday</div>
+              <span class="birthday-note"
+                >*(used strictly for tracking membership profiles)</span
+              >
+            </div>
+            <input
+              type="text"
+              id="birthday-display"
+              class="custom-input"
+              placeholder="Select your birth date"
+              readonly
+              required
+              style="cursor: pointer"
+            />
+            <hr class="dashed-divider" />
+          </div>
+
+          <div class="form-group">
+            <div class="pill-label">School</div>
+            <input
+              type="text"
+              id="school-input"
+              class="custom-input"
+              placeholder="Enter your school"
+              required
+              autocomplete="off"
+            />
+            <hr class="dashed-divider" />
+          </div>
+
+          <div class="form-group">
+            <div class="pill-label">Password</div>
+            <input
+              type="password"
+              id="pass1-input"
+              name="password1"
+              class="custom-input"
+              placeholder="Create a secure account password"
+              required
+              autocomplete="new-password"
+            />
+            <hr class="dashed-divider" />
+          </div>
+
+          <div class="form-group">
+            <div class="pill-label">Confirm Password</div>
+            <input
+              type="password"
+              id="pass2-input"
+              name="password2"
+              class="custom-input"
+              placeholder="Repeat account password"
+              required
+              autocomplete="new-password"
+            />
+            <hr class="dashed-divider" />
+          </div>
+
+          <div class="pledge-wrapper">
+            <div class="pledge-header-row">
+              <div class="pledge-title">Syllably Pledge</div>
+              <div class="pledge-line-spacer"></div>
+            </div>
+            <label class="pledge-box" for="pledge-check">
+              <input
+                type="checkbox"
+                id="pledge-check"
+                class="pledge-checkbox"
+              />
+              <span class="pledge-text"
+                >I solemnly swear to try my best to be a more organized and
+                productive student using Syllably.</span
+              >
+            </label>
+          </div>
+
+          <button type="submit" id="submit-application" class="submit-btn">
+            Submit application
+          </button>
+        </form>
+      </div>
+
+      <div class="calendar-overlay" id="calendarModal">
+        <div class="calendar-card">
+          <div class="calendar-header">
+            <h3>Select a Date</h3>
+            <button type="button" class="confirm-btn" id="confirmDate">
+              Confirm
+            </button>
+          </div>
+
+          <div class="calendar-nav">
+            <span class="nav-arrow" id="prevMonth">&#10094;</span>
+            <div class="nav-selectors">
+              <div class="month-display-label" id="monthLabel">June</div>
+              <select class="year-dropdown" id="yearSelect"></select>
+            </div>
+            <span class="nav-arrow" id="nextMonth">&#10095;</span>
+          </div>
+
+          <div class="calendar-grid">
+            <div class="weekday-label">Su</div>
+            <div class="weekday-label">Mo</div>
+            <div class="weekday-label">Tu</div>
+            <div class="weekday-label">We</div>
+            <div class="weekday-label">Th</div>
+            <div class="weekday-label">Fr</div>
+            <div class="weekday-label">Sa</div>
+          </div>
+          <div class="calendar-grid" id="daysContainer"></div>
+        </div>
+      </div>
     </div>
+
+    <script>
+      const birthdayDisplay = document.getElementById("birthday-display");
+      const calendarModal = document.getElementById("calendarModal");
+      const confirmBtn = document.getElementById("confirmDate");
+      const daysContainer = document.getElementById("daysContainer");
+      const monthLabel = document.getElementById("monthLabel");
+      const yearSelect = document.getElementById("yearSelect");
+
+      const nameInput = document.getElementById("name-input");
+      const usernameInput = document.getElementById("username-input");
+      const schoolInput = document.getElementById("school-input");
+      const pass1Input = document.getElementById("pass1-input");
+      const pass2Input = document.getElementById("pass2-input");
+      const pledgeCheck = document.getElementById("pledge-check");
+      const submitBtn = document.getElementById("submit-application");
+      const signupForm = document.getElementById("signup-form");
+
+      const imgInput = document.getElementById("profile-img-input");
+      const imgPreview = document.getElementById("profile-preview");
+
+      const loadingOverlay = document.getElementById("loadingOverlay");
+      const loadingSpinner = document.getElementById("loadingSpinner");
+      const successCheck = document.getElementById("successCheck");
+      const loadingMessage = document.getElementById("loadingMessage");
+      const headerBanner = document.getElementById("headerBanner");
+      const mainFormContent = document.getElementById("mainFormContent");
+
+      let currentDate = new Date(2026, 5, 5);
+      let selectedDate = new Date(2026, 5, 5);
+
+      const months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+
+      imgInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            imgPreview.src = e.target.result;
+            imgPreview.style.display = "block";
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      function initializeYearDropdown() {
+        yearSelect.innerHTML = "";
+        const startYear = 1970;
+        const endYear = 2035;
+        for (let y = endYear; y >= startYear; y--) {
+          const opt = document.createElement("option");
+          opt.value = y;
+          opt.textContent = y;
+          if (y === currentDate.getFullYear()) opt.selected = true;
+          yearSelect.appendChild(opt);
+        }
+      }
+      initializeYearDropdown();
+
+      yearSelect.addEventListener("change", (e) => {
+        currentDate.setFullYear(parseInt(e.target.value));
+        renderCalendar();
+      });
+
+      birthdayDisplay.addEventListener("click", () => {
+        calendarModal.style.display = "flex";
+        renderCalendar();
+      });
+
+      calendarModal.addEventListener("click", (e) => {
+        if (e.target === calendarModal) calendarModal.style.display = "none";
+      });
+
+      document.getElementById("prevMonth").addEventListener("click", () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        yearSelect.value = currentDate.getFullYear();
+        renderCalendar();
+      });
+
+      document.getElementById("nextMonth").addEventListener("click", () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        yearSelect.value = currentDate.getFullYear();
+        renderCalendar();
+      });
+
+      function renderCalendar() {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+
+        monthLabel.textContent = months[month];
+        daysContainer.innerHTML = "";
+
+        const firstDayIndex = new Date(year, month, 1).getDay();
+        const totalDays = new Date(year, month + 1, 0).getDate();
+
+        for (let i = 0; i < firstDayIndex; i++) {
+          const spacer = document.createElement("div");
+          spacer.classList.add("calendar-day", "empty");
+          daysContainer.appendChild(spacer);
+        }
+
+        for (let day = 1; day <= totalDays; day++) {
+          const dayElement = document.createElement("div");
+          dayElement.classList.add("calendar-day");
+          dayElement.textContent = day;
+
+          if (
+            day === selectedDate.getDate() &&
+            month === selectedDate.getMonth() &&
+            year === selectedDate.getFullYear()
+          ) {
+            dayElement.classList.add("active-day");
+          }
+
+          dayElement.addEventListener("click", () => {
+            document
+              .querySelectorAll(".calendar-day")
+              .forEach((d) => d.classList.remove("active-day"));
+            dayElement.classList.add("active-day");
+            selectedDate = new Date(year, month, day);
+          });
+
+          daysContainer.appendChild(dayElement);
+        }
+      }
+
+      confirmBtn.addEventListener("click", () => {
+        const formattedDisplay = `${months[selectedDate.getMonth()]} ${selectedDate.getDate()}, ${selectedDate.getFullYear()}`;
+        birthdayDisplay.value = formattedDisplay;
+        calendarModal.style.display = "none";
+        validateFormRequirements();
+      });
+
+      function validateFormRequirements() {
+        const isNameFilled = nameInput.value.trim().length > 0;
+        const isUsernameFilled = usernameInput.value.trim().length > 0;
+        const isBirthdayFilled = birthdayDisplay.value.trim().length > 0;
+        const isSchoolFilled = schoolInput.value.trim().length > 0;
+        const isPass1Filled = pass1Input.value.length > 0;
+        const isPass2Filled = pass2Input.value.length > 0;
+        const isPledgeChecked = pledgeCheck.checked;
+
+        if (
+          isNameFilled &&
+          isUsernameFilled &&
+          isBirthdayFilled &&
+          isSchoolFilled &&
+          isPass1Filled &&
+          isPass2Filled &&
+          isPledgeChecked
+        ) {
+          submitBtn.style.display = "block";
+        } else {
+          submitBtn.style.display = "none";
+        }
+      }
+
+      nameInput.addEventListener("input", validateFormRequirements);
+      usernameInput.addEventListener("input", validateFormRequirements);
+      schoolInput.addEventListener("input", validateFormRequirements);
+      pass1Input.addEventListener("input", validateFormRequirements);
+      pass2Input.addEventListener("input", validateFormRequirements);
+      pledgeCheck.addEventListener("change", validateFormRequirements);
+
+      signupForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        headerBanner.style.opacity = "0";
+        mainFormContent.style.opacity = "0";
+
+        setTimeout(() => {
+          headerBanner.style.display = "none";
+          mainFormContent.style.display = "none";
+          loadingOverlay.style.display = "flex";
+
+          setTimeout(() => {
+            loadingSpinner.style.display = "none";
+            successCheck.style.display = "flex";
+            loadingMessage.textContent = "Application Accepted!";
+
+            setTimeout(() => {
+              signupForm.submit();
+            }, 1200);
+          }, 1800);
+        }, 300);
+      });
+    </script>
   </body>
 </html>

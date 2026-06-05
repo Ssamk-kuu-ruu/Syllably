@@ -1,390 +1,463 @@
+{% load socialaccount %}
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    {% load static %}
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Login - Hangarin</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Syllably</title>
     {% include 'includes/pwa_head.html' %}
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
       :root {
-        --bg-start: #410000;
-        --bg-end: #120000;
-        --panel: rgba(25, 0, 0, 0.82);
-        --panel-border: rgba(255, 255, 255, 0.14);
-        --text-soft: #f6dada;
-        --accent: #f87171;
+        --primary-blue: #1a73e8;
+        --bg-light-blue: #cce2ff;
+        --text-dark-blue: #0f4c9c;
+        --placeholder-blue: #7faee5;
+        --btn-hover-blue: #0d5cb3;
+        --subtle-divider: rgba(26, 115, 232, 0.2);
+        --white: #ffffff;
       }
+
       * {
         box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
+
       body {
-        margin: 0;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background:
-          radial-gradient(
-            circle at top,
-            rgba(248, 113, 113, 0.18),
-            transparent 36%
-          ),
-          linear-gradient(135deg, var(--bg-start), var(--bg-end));
-        color: #fdfdfd;
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: linear-gradient(135deg, #bfe3ff 0%, #dbeeff 100%);
         min-height: 100vh;
-        display: grid;
-        place-items: center;
-        overflow: hidden;
-      }
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        background:
-          radial-gradient(
-            circle at 20% 20%,
-            rgba(255, 255, 255, 0.08),
-            transparent 22%
-          ),
-          radial-gradient(
-            circle at 80% 10%,
-            rgba(255, 255, 255, 0.06),
-            transparent 18%
-          ),
-          radial-gradient(
-            circle at 50% 85%,
-            rgba(248, 113, 113, 0.08),
-            transparent 28%
-          );
-        pointer-events: none;
-        animation: driftGlow 14s ease-in-out infinite alternate;
-      }
-      .page-wrap {
-        width: 100%;
-        min-height: 100vh;
-        display: grid;
-        place-items: center;
-        padding: 22px 14px 28px;
-        position: relative;
-        z-index: 1;
-      }
-      .card {
-        background: linear-gradient(
-          160deg,
-          rgba(41, 0, 0, 0.94),
-          rgba(18, 0, 2, 0.92)
-        );
-        border: 1px solid var(--panel-border);
-        border-radius: 26px;
-        padding: 30px 26px 28px;
-        box-shadow:
-          0 24px 60px rgba(0, 0, 0, 0.45),
-          inset 0 1px 0 rgba(255, 255, 255, 0.08);
-        width: min(520px, 92vw);
-        backdrop-filter: blur(18px);
-        animation: cardReveal 520ms ease-out both;
-        position: relative;
-        overflow: hidden;
-      }
-      .card::after {
-        content: "";
-        position: absolute;
-        inset: -30% auto auto -35%;
-        width: 70%;
-        height: 70%;
-        background: radial-gradient(
-          circle,
-          rgba(248, 113, 113, 0.14),
-          transparent 70%
-        );
-        pointer-events: none;
-        animation: floatAura 8s ease-in-out infinite alternate;
-      }
-      .logo-wrap {
-        text-align: center;
-        margin-bottom: 14px;
-        padding-top: 6px;
-      }
-      h2 {
-        margin: 0 0 18px;
-        font-size: clamp(1.4rem, 2vw, 2.2rem);
-        color: #ffffff;
-        text-shadow: 0 0 16px rgba(255, 255, 255, 0.2);
-        text-align: center;
-        animation: fadeLift 600ms ease-out both;
-        animation-delay: 140ms;
-      }
-      form p {
-        margin: 0 0 14px;
-      }
-      label {
-        display: block;
-        margin-bottom: 6px;
-        color: var(--text-soft);
-        font-size: 0.95rem;
-        text-align: left;
-        font-weight: 600;
-      }
-      input[type="text"],
-      input[type="password"],
-      input[type="email"] {
-        display: block;
-        width: 100%;
-        margin: 0;
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        border-radius: 14px;
-        background: rgba(255, 255, 255, 0.96);
-        color: #171717;
-        padding: 13px 14px;
-        outline: none;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
-        transition:
-          border-color 0.2s ease,
-          box-shadow 0.2s ease,
-          transform 0.2s ease;
-      }
-      input[type="text"]:focus,
-      input[type="password"]:focus,
-      input[type="email"]:focus {
-        border-color: rgba(248, 113, 113, 0.9);
-        box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.18);
-        transform: translateY(-1px);
-      }
-      form ul {
-        display: none;
-      }
-      form p:last-of-type {
-        margin-bottom: 18px;
-      }
-      button {
-        width: 100%;
-        margin: 0;
-        display: block;
-        padding: 13px;
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        border-radius: 14px;
-        font-weight: 700;
-        color: #fff;
-        background: linear-gradient(135deg, #ef4444, #f87171);
-        box-shadow: 0 10px 26px rgba(185, 28, 28, 0.35);
-        cursor: pointer;
-        transition:
-          transform 0.2s ease,
-          filter 0.2s ease,
-          box-shadow 0.2s ease;
-      }
-      button:hover {
-        transform: translateY(-1px);
-        filter: brightness(1.06);
-        box-shadow: 0 8px 22px rgba(185, 28, 28, 0.55);
-      }
-      .error {
-        color: #fecaca;
-        background: rgba(254, 202, 202, 0.12);
-        border: 1px solid rgba(252, 165, 165, 0.35);
-        border-radius: 10px;
-        padding: 10px 12px;
-        margin-top: 12px;
-        text-align: center;
-      }
-      .message {
-        border-radius: 10px;
-        padding: 10px 12px;
-        margin-top: 12px;
-        text-align: center;
-        font-weight: 600;
-      }
-      .message.success {
-        color: #dcfce7;
-        background: rgba(34, 197, 94, 0.12);
-        border: 1px solid rgba(34, 197, 94, 0.35);
-      }
-      .info {
-        text-align: center;
-        color: #e5d5d5;
-        font-size: 0.92rem;
-        line-height: 1.45;
-        margin: 16px 0 0;
-      }
-      .auth-links {
         display: flex;
-        gap: 10px;
         justify-content: center;
-        flex-wrap: wrap;
-        margin-top: 14px;
-      }
-      .auth-links a {
-        text-decoration: none;
-        color: #fff;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        border-radius: 999px;
-        padding: 10px 14px;
-        font-size: 0.92rem;
-        font-weight: 700;
-        transition:
-          transform 0.2s ease,
-          background 0.2s ease,
-          border-color 0.2s ease;
-      }
-      .auth-links a:hover {
-        transform: translateY(-1px);
-        background: rgba(248, 113, 113, 0.16);
-        border-color: rgba(248, 113, 113, 0.38);
-      }
-      .app-logo {
-        width: 112px;
-        height: auto;
-        border-radius: 50%;
-        border: 4px solid rgba(255, 255, 255, 0.44);
-        background: rgba(255, 255, 255, 0.08);
-        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
-        animation: logoPulse 4.5s ease-in-out infinite;
-      }
-      form {
-        animation: fadeLift 620ms ease-out both;
-        animation-delay: 200ms;
-      }
-      .info {
-        animation: fadeLift 660ms ease-out both;
-        animation-delay: 280ms;
-      }
-      button {
+        align-items: center;
         position: relative;
+      }
+
+      /* Centered Mobile App Frame matching signup page dimensions exactly */
+      .page-container {
+        width: 100%;
+        max-width: 500px;
+        min-height: 85vh;
+        background-color: var(--bg-light-blue);
+        border-radius: 24px;
         overflow: hidden;
+        box-shadow: 0 20px 40px rgba(15, 76, 156, 0.15);
+        margin: 20px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
       }
-      button::before {
-        content: "";
+
+      /* Top Header Ribbon with x button completely removed */
+      .header-banner {
+        background-color: var(--primary-blue);
+        padding: 18px 30px;
+        display: flex;
+        justify-content: flex-end; /* Pushes the badge perfectly to the right side */
+        align-items: center;
+        color: var(--white);
+      }
+
+      .club-badge {
+        background-color: var(--white);
+        color: var(--primary-blue);
+        padding: 6px 18px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-style: italic;
+        font-weight: 600;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Form Body Canvas Wrapper */
+      .form-content {
+        padding: 35px 45px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+      }
+
+      /* Underlined Title Badge matching your Membership Form header */
+      .form-title {
+        font-family: "Playfair Display", serif;
+        color: var(--text-dark-blue);
+        font-size: 38px;
+        font-weight: 600;
+        margin-bottom: 30px;
+        text-align: center;
+        border-bottom: 2px solid var(--text-dark-blue);
+        padding-bottom: 2px;
+        display: inline-block;
+        letter-spacing: 0.5px;
+      }
+
+      /* Input Rows Architecture */
+      .form-group {
+        width: 100%;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        position: relative;
+      }
+
+      /* Pill Capsule Labels */
+      .pill-label {
+        background-color: var(--primary-blue);
+        color: var(--white);
+        padding: 5px 18px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        margin-bottom: 6px;
+        letter-spacing: 0.3px;
+      }
+
+      .input-wrapper {
+        position: relative;
+        width: 100%;
+        display: flex;
+        align-items: center;
+      }
+
+      .custom-input {
+        width: 100%;
+        background: transparent;
+        border: none;
+        font-size: 16px;
+        color: var(--text-dark-blue);
+        padding: 8px 4px 4px 4px;
+        font-family: inherit;
+        font-weight: 400;
+      }
+
+      .custom-input::placeholder {
+        color: var(--placeholder-blue);
+        opacity: 0.85;
+      }
+
+      .custom-input:focus {
+        outline: none;
+      }
+
+      /* Dashed Divider Lines */
+      .dashed-divider {
+        width: 100%;
+        border: none;
+        border-top: 2px dashed var(--primary-blue);
+        margin-top: 2px;
+      }
+
+      /* Password Show/Hide Toggle Button Position */
+      .password-toggle {
         position: absolute;
-        top: 0;
-        left: -120%;
-        width: 55%;
-        height: 100%;
-        background: linear-gradient(
-          120deg,
-          transparent,
-          rgba(255, 255, 255, 0.25),
-          transparent
-        );
-        transform: skewX(-18deg);
-        animation: buttonShine 4.8s ease-in-out infinite;
+        right: 8px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: var(--text-dark-blue);
+        display: flex;
+        align-items: center;
       }
-      @keyframes cardReveal {
-        from {
-          opacity: 0;
-          transform: translateY(16px) scale(0.985);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
+
+      .password-toggle svg {
+        width: 18px;
+        height: 18px;
+        fill: currentColor;
       }
-      @keyframes driftGlow {
-        from {
-          transform: translate3d(0, 0, 0) scale(1);
-          opacity: 0.8;
-        }
-        to {
-          transform: translate3d(0, -10px, 0) scale(1.03);
-          opacity: 1;
-        }
+
+      /* Remember Me & Forgot Password alignments */
+      .utilities-row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        margin: 4px 0 20px 0;
+        padding: 0 4px;
       }
-      @keyframes floatAura {
-        from {
-          transform: translate3d(0, 0, 0) scale(1);
-        }
-        to {
-          transform: translate3d(18px, 12px, 0) scale(1.08);
-        }
+
+      .remember-me-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-dark-blue);
+        cursor: pointer;
+        user-select: none;
+        font-weight: 500;
       }
-      @keyframes logoPulse {
-        0%,
-        100% {
-          transform: translateY(0) scale(1);
-          box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
-        }
-        50% {
-          transform: translateY(-3px) scale(1.03);
-          box-shadow: 0 16px 34px rgba(0, 0, 0, 0.34);
-        }
+
+      .remember-checkbox {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--primary-blue);
+        cursor: pointer;
       }
-      @keyframes buttonShine {
-        0% {
-          left: -120%;
-        }
-        35% {
-          left: 130%;
-        }
-        100% {
-          left: 130%;
-        }
+
+      .forgot-link {
+        color: var(--primary-blue);
+        text-decoration: none;
+        font-weight: 600;
       }
-      @keyframes fadeLift {
-        from {
-          opacity: 0;
-          transform: translateY(8px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+
+      /* Flat Full-width Submission Button matching signup setup */
+      .submit-btn {
+        width: 100%;
+        background-color: var(--primary-blue);
+        color: var(--white);
+        border: none;
+        padding: 15px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 10px;
+        box-shadow: 0 4px 14px rgba(26, 115, 232, 0.25);
+        border-radius: 0;
+        transition: background-color 0.2s;
       }
-      @media (prefers-reduced-motion: reduce) {
-        .card,
-        .logo-wrap,
-        h2,
-        form,
-        .info,
-        body::before,
-        .card::after,
-        .app-logo,
-        button::before {
-          animation: none;
-        }
+
+      .submit-btn:hover {
+        background-color: var(--btn-hover-blue);
       }
-      @media (max-width: 520px) {
-        .card {
-          padding: 22px 16px 20px;
-          border-radius: 22px;
-          width: min(520px, 95vw);
+
+      /* Text Section Separator */
+      .or-separator {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: var(--text-dark-blue);
+        font-size: 12px;
+        font-weight: 700;
+        opacity: 0.5;
+        margin: 24px 0;
+      }
+
+      .or-separator::before,
+      .or-separator::after {
+        content: "";
+        flex: 1;
+        border-bottom: 2px solid var(--subtle-divider);
+      }
+
+      .or-separator:not(:empty)::before {
+        margin-right: 1em;
+      }
+      .or-separator:not(:empty)::after {
+        margin-left: 1em;
+      }
+
+      /* Social Authentication Capsule Layout Container */
+      .social-buttons-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .social-btn {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background-color: var(--white);
+        color: var(--text-dark-blue);
+        border: 1.5px solid rgba(26, 115, 232, 0.2);
+        padding: 14px;
+        border-radius: 0;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+
+      .social-btn:hover {
+        background-color: rgba(26, 115, 232, 0.05);
+        border-color: var(--primary-blue);
+      }
+
+      .social-btn svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      /* Redirection Footnote Navigation Link */
+      .signup-redirect-link {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-dark-blue);
+        margin-top: 30px;
+        text-decoration: none;
+        opacity: 0.85;
+        text-align: center;
+      }
+
+      .signup-redirect-link strong {
+        color: var(--primary-blue);
+        text-decoration: underline;
+      }
+
+      .errorlist {
+        color: #d32f2f;
+        list-style: none;
+        font-size: 14px;
+        margin-bottom: 15px;
+        width: 100%;
+        text-align: left;
+        background-color: rgba(211, 47, 47, 0.05);
+        padding: 12px;
+        border-radius: 8px;
+      }
+
+      @media (max-width: 768px) {
+        .page-container {
+          margin: 0;
+          border-radius: 0;
+          min-height: 100vh;
+          max-width: 100%;
         }
-        .app-logo {
-          width: 96px;
-        }
-        h2 {
-          margin-bottom: 16px;
-        }
-        .page-wrap {
-          padding: 14px 12px 22px;
+        .form-content {
+          padding: 35px 24px;
         }
       }
     </style>
   </head>
   <body>
-    <div class="page-wrap">
-      <div class="card">
-        <div class="logo-wrap">
-          <img
-            class="app-logo"
-            src="{% static 'Logo.jpg' %}"
-            alt="Hangarin app logo"
-          />
-        </div>
-        <h2>Hangarin App</h2>
-        <form method="post">
-          {% csrf_token %} {{ form.as_p }}
-          <button type="submit">Log In</button>
-        </form>
-        {% if messages %} {% for message in messages %}
-        <p class="message {% if message.tags %}{{ message.tags }}{% endif %}">
-          {{ message }}
-        </p>
-        {% endfor %} {% endif %} {% if form.errors %}
-        <p class="error">Invalid username or password.</p>
+    <div class="page-container">
+      <!-- Top Header Ribbon (The close button anchor has been completely extracted) -->
+      <div class="header-banner">
+        <div class="club-badge">Syllably Club</div>
+      </div>
+
+      <div class="form-content">
+        <h1 class="form-title">Welcome Back</h1>
+
+        {% if form.errors %}
+        <ul class="errorlist">
+          <li>Your username and password didn't match. Please try again.</li>
+        </ul>
         {% endif %}
-        <div class="auth-links">
-          <a href="{% url 'signup' %}">Sign up</a>
-          <a href="{% url 'password_reset' %}">Forgot password?</a>
+
+        <form method="POST" style="width: 100%">
+          {% csrf_token %}
+
+          <!-- Username Input Row -->
+          <div class="form-group">
+            <div class="pill-label">Username</div>
+            <div class="input-wrapper">
+              <input
+                type="text"
+                name="username"
+                class="custom-input"
+                placeholder="Enter your username"
+                required
+                autofocus
+                autocomplete="username"
+              />
+            </div>
+            <hr class="dashed-divider" />
+          </div>
+
+          <!-- Password Input Row -->
+          <div class="form-group">
+            <div class="pill-label">Password</div>
+            <div class="input-wrapper">
+              <input
+                type="password"
+                name="password"
+                id="loginPasswordInput"
+                class="custom-input"
+                placeholder="Enter your password"
+                required
+                autocomplete="current-password"
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                onclick="togglePasswordVisibility()"
+              >
+                <svg id="eyeIcon" viewBox="0 0 24 24">
+                  <path
+                    d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
+                  />
+                </svg>
+              </button>
+            </div>
+            <hr class="dashed-divider" />
+          </div>
+
+          <!-- Options Row Panel (Remember / Forgot) -->
+          <div class="utilities-row">
+            <label class="remember-me-label">
+              <input type="checkbox" class="remember-checkbox" />
+              Remember me
+            </label>
+            <a href="#" class="forgot-link">Forgot password?</a>
+          </div>
+
+          <!-- Submission Action -->
+          <button type="submit" class="submit-btn">Sign In</button>
+        </form>
+
+        <div class="or-separator">OR</div>
+
+        <!-- Social Authentication Buttons Framework -->
+        <div class="social-buttons-container">
+          <!-- Google Sign In -->
+          <a href="{% provider_login_url 'google' %}" class="social-btn">
+            <svg viewBox="0 0 24 24">
+              <path
+                fill="var(--primary-blue)"
+                d="M12.24 10.285V13.4h6.86c-.277 1.56-1.602 4.585-6.86 4.585-4.54 0-8.24-3.765-8.24-8.4s3.7-8.4 8.24-8.4c2.58 0 4.307 1.095 5.298 2.045l2.465-2.37C18.285 1.05 15.49 0 12.24 0 5.58 0 0 5.37 0 12s5.58 12 12.24 12c6.96 0 11.57-4.89 11.57-11.79 0-.795-.085-1.4-.195-1.925H12.24z"
+              />
+            </svg>
+            Sign in with Google
+          </a>
+
+          <!-- GitHub Sign In -->
+          <a href="{% provider_login_url 'github' %}" class="social-btn">
+            <svg viewBox="0 0 24 24">
+              <path
+                fill="var(--primary-blue)"
+                d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.11.82-.26.82-.577v-2.234c-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22v3.293c0 .319.22.694.825.576C20.565 21.795 24 17.3 24 12c0-6.63-5.37-12-12-12z"
+              />
+            </svg>
+            Sign in with GitHub
+          </a>
         </div>
+
+        <!-- Footer Redirect Link -->
+        <a href="{% url 'signup' %}" class="signup-redirect-link">
+          Don't have an account yet? <strong>Apply here</strong>
+        </a>
       </div>
     </div>
+
+    <!-- Script Password Toggle Logic -->
+    <script>
+      function togglePasswordVisibility() {
+        const passwordField = document.getElementById("loginPasswordInput");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        if (passwordField.type === "password") {
+          passwordField.type = "text";
+          eyeIcon.innerHTML =
+            '<path d="M12 7c-2.76 0-5 2.24-5 5 0 .65.13 1.26.36 1.82l2.92-2.92c-.17-.29-.28-.63-.28-.9 0-1.1.9-2 2-2 .27 0 .61.11.9.28l2.92-2.92c-.56-.23-1.17-.36-1.82-.36zm0 10c2.76 0 5-2.24 5-5 0-.65-.13-1.26-.36-1.82l-2.92 2.92c.17.29.28.63.28.9 0 1.1-.9 2-2 2-.27 0-.61-.11-.9-.28l-2.92 2.92c.56.23 1.17.36 1.82.36zM11.91 4.5c-4.62 0-8.58 2.73-10.41 6.73A11.912 11.912 0 0 0 12 19.5c4.62 0 8.58-2.73 10.41-6.73A11.912 11.912 0 0 0 11.91 4.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 0z"/>';
+        } else {
+          passwordField.type = "password";
+          eyeIcon.innerHTML =
+            '<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>';
+        }
+      }
+    </script>
   </body>
 </html>
