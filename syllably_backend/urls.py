@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.urls import path, re_path, include
 from pathlib import Path
 from django.conf import settings
+from tasks.views import TaskListAPI
 
 # Import your views
 from tasks.views import (
@@ -82,4 +83,5 @@ urlpatterns = [
     path('service-worker.js', service_worker_view, name='service_worker'),
     path('', include('pwa.urls')), 
     path('accounts/', include('allauth.urls')),
+    path('api/tasks/', TaskListAPI.as_view(), name='task_list_api'),
 ]

@@ -10,6 +10,10 @@ from django.views.generic.base import RedirectView
 from django.views.decorators.http import require_POST
 from tasks.models import Category, Note, Priority, SubTask, Task
 from tasks.forms import ProfileForm, SignUpForm, TaskForm
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .models import Task
+from folders.serializers import TaskSerializer
 
 class HomeView(RedirectView):
     pattern_name = 'login'
@@ -157,6 +161,11 @@ class MyProtectedView(LoginRequiredMixin, TemplateView):
     template_name = 'something.html'
     # ... other attributes
 
+class TaskListAPI(APIView):
+    def get(self, request):
+        tasks = Task.objects.all() # Fetch all tasks
+        serializer = TaskSerializer(tasks, many=True) # Turn them into JSON
+        return Response(serializer.data) # Send JSON back
 
 @login_required
 @require_POST
